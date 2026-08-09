@@ -3,12 +3,17 @@ package com.xiaogong.csestudy.ui.study
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.xiaogong.csestudy.CseApplication
+import com.xiaogong.csestudy.data.model.ExamLevel
 import com.xiaogong.csestudy.data.model.Subject
 import com.xiaogong.csestudy.data.repository.QuestionRepository
+import com.xiaogong.csestudy.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class StudyViewModel(private val questionRepo: QuestionRepository) : ViewModel() {
+class StudyViewModel(
+    private val questionRepo: QuestionRepository,
+    private val prefsRepo: UserPreferencesRepository
+) : ViewModel() {
 
     // 科目列表及各科题目数量
     private val _subjectCounts = MutableStateFlow<Map<Subject, Int>>(emptyMap())
@@ -28,7 +33,8 @@ class StudyViewModel(private val questionRepo: QuestionRepository) : ViewModel()
 
     private fun loadSubjectCounts() {
         viewModelScope.launch {
-            val counts = Subject.entries.associateWith { subject ->
+            val level = prefsRepo.examLevelFlow.first() ?: ExamLevel.INTERMEDIATE
+            val counts = Subject.forLevel(level).associateWith { subject ->
                 questionRepo.getCountBySubject(subject).first()
             }
             _subjectCounts.value = counts
@@ -53,6 +59,9 @@ class StudyViewModel(private val questionRepo: QuestionRepository) : ViewModel()
 class StudyViewModelFactory(private val application: CseApplication) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
         @Suppress("UNCHECKED_CAST")
-        return StudyViewModel(application.container.questionRepository) as T
+        return StudyViewModel(
+            application.container.questionRepository,
+            application.container.userPreferencesRepository
+        ) as T
     }
 }

@@ -33,6 +33,12 @@ interface QuestionDao {
     @Query("SELECT * FROM questions ORDER BY RANDOM() LIMIT :limit")
     suspend fun getRandom(limit: Int): List<QuestionEntity>
 
+    @Query("SELECT * FROM questions WHERE subject IN (:subjects) ORDER BY RANDOM() LIMIT :limit")
+    suspend fun getRandomInSubjects(subjects: List<String>, limit: Int): List<QuestionEntity>
+
+    @Query("SELECT * FROM questions WHERE subject IN (:subjects) ORDER BY id")
+    fun getBySubjects(subjects: List<String>): Flow<List<QuestionEntity>>
+
     @Query("SELECT DISTINCT chapter FROM questions WHERE subject = :subject ORDER BY chapter")
     fun getChaptersBySubject(subject: String): Flow<List<String>>
 
@@ -44,6 +50,9 @@ interface QuestionDao {
 
     @Query("SELECT COUNT(*) FROM questions")
     fun getTotalCount(): Flow<Int>
+
+    @Query("SELECT COUNT(*) FROM questions WHERE subject IN (:subjects)")
+    fun getCountInSubjects(subjects: List<String>): Flow<Int>
 
     @Query("SELECT * FROM questions ORDER BY id")
     fun getAll(): Flow<List<QuestionEntity>>

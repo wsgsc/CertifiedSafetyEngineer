@@ -28,14 +28,26 @@ class QuestionRepository(private val dao: QuestionDao) {
 
     fun getTotalCount(): Flow<Int> = dao.getTotalCount()
 
+    /** 该考试等级可练习科目的题目总数 */
+    fun getCountForLevel(level: ExamLevel): Flow<Int> =
+        dao.getCountInSubjects(subjectNames(level))
+
     fun getAll(): Flow<List<Question>> =
         dao.getAll().map { list -> list.map { it.toDomain() } }
+
+    /** 该考试等级可练习科目的全部题目，按 id 顺序 */
+    fun getAllForLevel(level: ExamLevel): Flow<List<Question>> =
+        dao.getBySubjects(subjectNames(level)).map { list -> list.map { it.toDomain() } }
 
     suspend fun getRandomBySubject(subject: Subject, limit: Int = 20): List<Question> =
         dao.getRandomBySubject(subject.name, limit).map { it.toDomain() }
 
     suspend fun getRandom(limit: Int = 20): List<Question> =
         dao.getRandom(limit).map { it.toDomain() }
+
+    /** 在该考试等级可练习科目范围内随机抽题 */
+    suspend fun getRandomForLevel(level: ExamLevel, limit: Int = 20): List<Question> =
+        dao.getRandomInSubjects(subjectNames(level), limit).map { it.toDomain() }
 
     suspend fun getByIds(ids: List<Long>): List<Question> =
         dao.getByIds(ids).map { it.toDomain() }
@@ -46,6 +58,8 @@ class QuestionRepository(private val dao: QuestionDao) {
         dao.insertAll(questions.map { it.toEntity() })
 
     suspend fun insert(question: Question) = dao.insert(question.toEntity())
+
+    private fun subjectNames(level: ExamLevel) = Subject.forLevel(level).map { it.name }
 }
 
 private fun QuestionEntity.toDomain() = Question(

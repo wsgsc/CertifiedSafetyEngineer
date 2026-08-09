@@ -2,6 +2,8 @@ package com.xiaogong.csestudy.data.repository
 
 import com.xiaogong.csestudy.data.local.dao.*
 import com.xiaogong.csestudy.data.local.entity.*
+import com.xiaogong.csestudy.data.model.ExamLevel
+import com.xiaogong.csestudy.data.model.Subject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.text.SimpleDateFormat
@@ -80,23 +82,31 @@ class UserProgressRepository(
     // ── 错题 ────────────────────────────────────────────────────
 
     fun getWrongQuestions(): Flow<List<WrongQuestionEntity>> = wrongQuestionDao.getActive()
-    fun getWrongCount(): Flow<Int> = wrongQuestionDao.getActiveCount()
-    suspend fun getWrongQuestionIds(): List<Long> = wrongQuestionDao.getActiveIds()
+
+    fun getWrongCount(level: ExamLevel): Flow<Int> =
+        wrongQuestionDao.getActiveCountInSubjects(subjectNames(level))
+
+    suspend fun getWrongQuestionIds(level: ExamLevel): List<Long> =
+        wrongQuestionDao.getActiveIdsInSubjects(subjectNames(level))
     suspend fun setMastered(questionId: Long) = wrongQuestionDao.setMastered(questionId, true)
     suspend fun deleteWrong(questionId: Long) = wrongQuestionDao.delete(questionId)
 
     // ── 收藏 ────────────────────────────────────────────────────
 
-    fun getFavoriteCount(): Flow<Int> = favoriteQuestionDao.getCount()
+    fun getFavoriteCount(level: ExamLevel): Flow<Int> =
+        favoriteQuestionDao.getCountInSubjects(subjectNames(level))
+
     fun isFavorite(questionId: Long): Flow<Boolean> = favoriteQuestionDao.isFavorite(questionId)
-    suspend fun getFavoriteIds(): List<Long> = favoriteQuestionDao.getAllIds()
+
+    suspend fun getFavoriteIds(level: ExamLevel): List<Long> =
+        favoriteQuestionDao.getAllIdsInSubjects(subjectNames(level))
 
     /** 收藏 id 集合，随数据库变化实时推送 */
     fun getFavoriteIdsFlow(): Flow<Set<Long>> =
         favoriteQuestionDao.getAll().map { list -> list.map { it.questionId }.toSet() }
 
     suspend fun toggleFavorite(questionId: Long) {
-        if (favoriteQuestionDao.getAllIds().contains(questionId)) {
+        if (favoriteQuestionDao.exists(questionId)) {
             favoriteQuestionDao.delete(questionId)
         } else {
             favoriteQuestionDao.insert(FavoriteQuestionEntity(questionId))
@@ -105,25 +115,26 @@ class UserProgressRepository(
 
     // ── 统计 ────────────────────────────────────────────────────
 
-    fun getTotalAnswered(): Flow<Int> = userAnswerDao.getTotalCount()
-    fun getTotalCorrect(): Flow<Int> = userAnswerDao.getCorrectCount()
+    // 统计口径与题量一致：只算该考试等级可练习科目的作答（初级仅法规+管理）
+    fun getTotalAnswered(level: ExamLevel): Flow<Int> =
+        userAnswerDao.getTotalCountInSubjects(subjectNames(level))
+
+    fun getTotalCorrect(level: ExamLevel): Flow<Int> =
+        userAnswerDao.getCorrectCountInSubjects(subjectNames(level))
 
     /** 已刷过的题目数（同一题重复作答只算一次） */
-    fun getAnsweredQuestionCount(): Flow<Int> = userAnswerDao.getAnsweredQuestionCount()
+    fun getAnsweredQuestionCount(level: ExamLevel): Flow<Int> =
+        userAnswerDao.getAnsweredQuestionCountInSubjects(subjectNames(level))
 
     /** 每题最近一次作答，key = questionId */
     suspend fun getLatestAnswerMap(): Map<Long, UserAnswerEntity> =
         userAnswerDao.getLatestAnswers().associateBy { it.questionId }
 
-    fun getTodayAnswered(): Flow<Int> {
-        val startOfDay = getTodayStartMillis()
-        return userAnswerDao.getTodayCount(startOfDay)
-    }
+    fun getTodayAnswered(level: ExamLevel): Flow<Int> =
+        userAnswerDao.getTodayCountInSubjects(subjectNames(level), getTodayStartMillis())
 
-    fun getTodayCorrect(): Flow<Int> {
-        val startOfDay = getTodayStartMillis()
-        return userAnswerDao.getTodayCorrectCount(startOfDay)
-    }
+    fun getTodayCorrect(level: ExamLevel): Flow<Int> =
+        userAnswerDao.getTodayCorrectCountInSubjects(subjectNames(level), getTodayStartMillis())
 
     fun getWeakKnowledgePoints(limit: Int = 5): Flow<List<KnowledgeProgressEntity>> =
         knowledgeProgressDao.getWeakPoints(limit)
@@ -149,6 +160,8 @@ class UserProgressRepository(
 
     /** 累计打卡天数（有答题记录的天数） */
     fun getCheckInDays(): Flow<Int> = studyRecordDao.getCheckInDayCount()
+
+    private fun subjectNames(level: ExamLevel) = Subject.forLevel(level).map { it.name }
 
     private fun getTodayStartMillis(): Long {
         val cal = Calendar.getInstance()

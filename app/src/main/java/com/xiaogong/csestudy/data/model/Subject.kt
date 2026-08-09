@@ -11,7 +11,7 @@ enum class Subject(val displayName: String, val levels: List<ExamLevel>) {
     ),
     TECHNOLOGY(
         "安全生产技术基础",
-        listOf(ExamLevel.JUNIOR, ExamLevel.INTERMEDIATE)
+        listOf(ExamLevel.INTERMEDIATE)
     ),
     CHEMICAL(
         "化工安全",

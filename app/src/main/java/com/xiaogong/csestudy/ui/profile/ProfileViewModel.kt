@@ -33,6 +33,7 @@ data class ProfileUiState(
         if (totalAnswered == 0) 0 else totalCorrect * 100 / totalAnswered
 }
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class ProfileViewModel(
     private val app: Application,
     private val progressRepo: UserProgressRepository,
@@ -49,13 +50,16 @@ class ProfileViewModel(
             }
         }
         viewModelScope.launch {
-            combine(
-                progressRepo.getTotalAnswered(),
-                progressRepo.getTotalCorrect(),
-                progressRepo.getFavoriteCount(),
-                prefsRepo.examLevelFlow
-            ) { total, correct, fav, level ->
-                ProgressSnapshot(total, correct, fav, level)
+            // 统计随考试等级切换，只算该等级可练习科目的数据
+            prefsRepo.examLevelFlow.flatMapLatest { level ->
+                val lv = level ?: ExamLevel.INTERMEDIATE
+                combine(
+                    progressRepo.getTotalAnswered(lv),
+                    progressRepo.getTotalCorrect(lv),
+                    progressRepo.getFavoriteCount(lv)
+                ) { total, correct, fav ->
+                    ProgressSnapshot(total, correct, fav, level)
+                }
             }.combine(prefsRepo.userProfileFlow) { snap, profile ->
                 val streak = progressRepo.getStreakDays()
                 ProfileState(snap.total, snap.correct, snap.fav, snap.level, profile, streak)

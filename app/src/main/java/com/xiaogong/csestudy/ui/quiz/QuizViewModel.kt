@@ -3,6 +3,7 @@ package com.xiaogong.csestudy.ui.quiz
 import androidx.lifecycle.*
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.xiaogong.csestudy.CseApplication
+import com.xiaogong.csestudy.data.model.ExamLevel
 import com.xiaogong.csestudy.data.model.Question
 import com.xiaogong.csestudy.data.model.QuestionType
 import com.xiaogong.csestudy.data.model.Subject
@@ -69,30 +70,31 @@ class QuizViewModel(
 
     private fun loadQuestions() {
         viewModelScope.launch {
+            val level = prefsRepo.examLevelFlow.first() ?: ExamLevel.INTERMEDIATE
             val questions = when (mode) {
                 QuizMode.SEQUENTIAL -> {
                     if (param.isNotBlank()) {
                         questionRepo.getBySubject(Subject.valueOf(param)).first()
                     } else {
-                        questionRepo.getAll().first()
+                        questionRepo.getAllForLevel(level).first()
                     }
                 }
-                QuizMode.RANDOM -> questionRepo.getRandom(20)
+                QuizMode.RANDOM -> questionRepo.getRandomForLevel(level, 20)
                 QuizMode.CHAPTER -> {
                     val parts = param.split("|")
                     if (parts.size == 2) {
                         questionRepo.getByChapter(Subject.valueOf(parts[0]), parts[1]).first()
-                    } else questionRepo.getRandom(20)
+                    } else questionRepo.getRandomForLevel(level, 20)
                 }
                 QuizMode.KNOWLEDGE -> {
                     questionRepo.getByKnowledgePoint(param).first()
                 }
                 QuizMode.WRONG -> {
-                    val ids = progressRepo.getWrongQuestionIds()
+                    val ids = progressRepo.getWrongQuestionIds(level)
                     questionRepo.getByIds(ids)
                 }
                 QuizMode.FAVORITE -> {
-                    val ids = progressRepo.getFavoriteIds()
+                    val ids = progressRepo.getFavoriteIds(level)
                     questionRepo.getByIds(ids)
                 }
                 QuizMode.REDO -> {

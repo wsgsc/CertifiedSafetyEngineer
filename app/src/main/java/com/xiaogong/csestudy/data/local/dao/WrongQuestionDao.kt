@@ -27,11 +27,21 @@ interface WrongQuestionDao {
     @Query("SELECT * FROM wrong_questions WHERE isMastered = 0 ORDER BY lastWrongAt DESC")
     fun getActive(): Flow<List<WrongQuestionEntity>>
 
-    @Query("SELECT COUNT(*) FROM wrong_questions WHERE isMastered = 0")
-    fun getActiveCount(): Flow<Int>
+    // 错题数/错题 id 均限定在指定科目范围内（初级仅法规+管理）
+    @Query("""
+        SELECT COUNT(*) FROM wrong_questions w
+        JOIN questions q ON q.id = w.questionId
+        WHERE q.subject IN (:subjects) AND w.isMastered = 0
+    """)
+    fun getActiveCountInSubjects(subjects: List<String>): Flow<Int>
 
-    @Query("SELECT questionId FROM wrong_questions WHERE isMastered = 0")
-    suspend fun getActiveIds(): List<Long>
+    @Query("""
+        SELECT w.questionId FROM wrong_questions w
+        JOIN questions q ON q.id = w.questionId
+        WHERE q.subject IN (:subjects) AND w.isMastered = 0
+        ORDER BY w.lastWrongAt DESC
+    """)
+    suspend fun getActiveIdsInSubjects(subjects: List<String>): List<Long>
 
     @Query("SELECT EXISTS(SELECT 1 FROM wrong_questions WHERE questionId = :questionId AND isMastered = 0)")
     fun isWrong(questionId: Long): Flow<Boolean>

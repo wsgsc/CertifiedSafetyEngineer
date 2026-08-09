@@ -7,6 +7,7 @@ import com.xiaogong.csestudy.data.model.ExamLevel
 import com.xiaogong.csestudy.data.repository.QuestionRepository
 import com.xiaogong.csestudy.data.repository.UserPreferencesRepository
 import com.xiaogong.csestudy.data.repository.UserProgressRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -69,6 +70,7 @@ private data class DailyStats(
     val checkInDays: Int
 )
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class HomeViewModel(
     private val questionRepo: QuestionRepository,
     private val progressRepo: UserProgressRepository,
@@ -89,21 +91,25 @@ class HomeViewModel(
 
     init {
         viewModelScope.launch {
-            combine(
-                questionRepo.getTotalCount(),
-                progressRepo.getTodayAnswered(),
-                progressRepo.getTodayCorrect(),
-                progressRepo.getWrongCount(),
-                progressRepo.getCheckInDays()
-            ) { total, todayAns, todayCorr, wrong, checkIn ->
-                DailyStats(
-                    totalQuestions = total,
-                    todayAnswered = todayAns,
-                    todayCorrect = todayCorr,
-                    wrongCount = wrong,
-                    streakDays = progressRepo.getStreakDays(),
-                    checkInDays = checkIn
-                )
+            // 题量按考试等级可练习的科目范围统计（初级仅法规+管理）
+            prefsRepo.examLevelFlow.flatMapLatest { level ->
+                val lv = level ?: ExamLevel.INTERMEDIATE
+                combine(
+                    questionRepo.getCountForLevel(lv),
+                    progressRepo.getTodayAnswered(lv),
+                    progressRepo.getTodayCorrect(lv),
+                    progressRepo.getWrongCount(lv),
+                    progressRepo.getCheckInDays()
+                ) { total, todayAns, todayCorr, wrong, checkIn ->
+                    DailyStats(
+                        totalQuestions = total,
+                        todayAnswered = todayAns,
+                        todayCorrect = todayCorr,
+                        wrongCount = wrong,
+                        streakDays = progressRepo.getStreakDays(),
+                        checkInDays = checkIn
+                    )
+                }
             }.collect { stats ->
                 _uiState.update {
                     it.copy(
@@ -119,12 +125,15 @@ class HomeViewModel(
         }
 
         viewModelScope.launch {
-            combine(
-                progressRepo.getAnsweredQuestionCount(),
-                progressRepo.getTotalAnswered(),
-                progressRepo.getTotalCorrect()
-            ) { answered, times, correct ->
-                Triple(answered, times, correct)
+            prefsRepo.examLevelFlow.flatMapLatest { level ->
+                val lv = level ?: ExamLevel.INTERMEDIATE
+                combine(
+                    progressRepo.getAnsweredQuestionCount(lv),
+                    progressRepo.getTotalAnswered(lv),
+                    progressRepo.getTotalCorrect(lv)
+                ) { answered, times, correct ->
+                    Triple(answered, times, correct)
+                }
             }.collect { (answered, times, correct) ->
                 _uiState.update {
                     it.copy(
