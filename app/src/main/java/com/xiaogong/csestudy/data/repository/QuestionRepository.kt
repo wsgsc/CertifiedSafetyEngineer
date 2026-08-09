@@ -58,11 +58,7 @@ private fun QuestionEntity.toDomain() = Question(
     question = question,
     options = options,
     answer = answer,
-    analysis = analysis,
-    difficulty = difficulty,
-    source = source,
-    year = year,
-    tags = tags
+    analysis = analysis
 )
 
 private fun Question.toEntity() = QuestionEntity(
@@ -75,9 +71,5 @@ private fun Question.toEntity() = QuestionEntity(
     question = question,
     options = options,
     answer = answer,
-    analysis = analysis,
-    difficulty = difficulty,
-    source = source,
-    year = year,
-    tags = tags
+    analysis = analysis
 )

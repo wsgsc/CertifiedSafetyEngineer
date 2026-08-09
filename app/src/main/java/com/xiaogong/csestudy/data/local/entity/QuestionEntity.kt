@@ -14,9 +14,5 @@ data class QuestionEntity(
     val question: String,
     val options: List<String>,  // TypeConverter → JSON
     val answer: String,
-    val analysis: String,
-    val difficulty: Int = 2,
-    val source: String = "",
-    val year: Int = 0,
-    val tags: List<String> = emptyList()
+    val analysis: String
 )

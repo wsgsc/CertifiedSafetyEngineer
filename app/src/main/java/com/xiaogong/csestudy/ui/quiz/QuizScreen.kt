@@ -165,11 +165,6 @@ private fun QuestionHeader(question: Question) {
             onClick = {},
             label = { Text(question.type.displayName, style = MaterialTheme.typography.labelSmall) }
         )
-        Text(
-            text = "难度: ${"★".repeat(question.difficulty)}${"☆".repeat(5 - question.difficulty)}",
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }
 
@@ -286,17 +281,6 @@ private fun AnswerResult(state: QuizUiState, question: Question) {
                     color = MaterialTheme.colorScheme.primary)
                 Spacer(Modifier.height(4.dp))
                 Text(question.knowledgePoint, style = MaterialTheme.typography.bodyMedium)
-                if (question.source.isNotBlank() || question.year > 0) {
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        buildString {
-                            if (question.year > 0) append("${question.year}年")
-                            if (question.source.isNotBlank()) append(" · ${question.source}")
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
             }
         }
     }

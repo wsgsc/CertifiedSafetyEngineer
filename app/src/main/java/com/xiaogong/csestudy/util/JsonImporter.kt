@@ -36,11 +36,7 @@ object JsonImporter {
         val question: String = "",
         val options: List<String> = emptyList(),
         val answer: String = "",
-        val analysis: String = "",
-        val difficulty: Int = 2,
-        val source: String = "",
-        val year: Int = 0,
-        val tags: List<String> = emptyList()
+        val analysis: String = ""
     ) {
         fun toDomain(): Question? = try {
             Question(
@@ -53,11 +49,7 @@ object JsonImporter {
                 question = question,
                 options = options,
                 answer = answer,
-                analysis = analysis,
-                difficulty = difficulty,
-                source = source,
-                year = year,
-                tags = tags
+                analysis = analysis
             )
         } catch (e: Exception) {
             null

@@ -20,7 +20,7 @@ import com.xiaogong.csestudy.data.local.entity.*
         StudyRecordEntity::class,
         KnowledgeProgressEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -49,13 +49,38 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // 移除 questions 表的 difficulty / source / year / tags 四列。
+        // 题库是纯种子数据，清空后由 CseApplication 从 assets 重新导入。
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS questions")
+                db.execSQL(
+                    """
+                    CREATE TABLE questions (
+                        id INTEGER NOT NULL PRIMARY KEY,
+                        level TEXT NOT NULL,
+                        subject TEXT NOT NULL,
+                        chapter TEXT NOT NULL,
+                        knowledgePoint TEXT NOT NULL,
+                        type TEXT NOT NULL,
+                        question TEXT NOT NULL,
+                        options TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        analysis TEXT NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "cse_study.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build().also { INSTANCE = it }
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .build().also { INSTANCE = it }
             }
     }
 }
