@@ -18,6 +18,9 @@ sealed class Screen(val route: String) {
         fun createRoute(subjectName: String) = "subject_detail/$subjectName"
     }
 
+    // 捐赠
+    object Donate : Screen("donate")
+
     // 学习资料
     object MaterialList : Screen("material_list")
     object PdfReader : Screen("pdf_reader/{assetName}") {

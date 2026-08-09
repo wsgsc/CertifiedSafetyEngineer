@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.*
 import androidx.navigation.compose.*
 import com.xiaogong.csestudy.CseApplication
+import com.xiaogong.csestudy.ui.donate.DonateScreen
 import com.xiaogong.csestudy.ui.home.HomeScreen
 import com.xiaogong.csestudy.ui.home.HomeViewModel
 import com.xiaogong.csestudy.ui.home.HomeViewModelFactory
@@ -145,7 +146,16 @@ fun AppNavigation(application: CseApplication) {
             }
             composable(Screen.Profile.route) {
                 val vm: ProfileViewModel = viewModel(factory = ProfileViewModelFactory(application))
-                ProfileScreen(vm = vm, onLevelSelected = { level -> mainVm.saveLevel(level) })
+                ProfileScreen(
+                    vm = vm,
+                    onLevelSelected = { level -> mainVm.saveLevel(level) },
+                    onDonateClick = { navController.navigate(Screen.Donate.route) }
+                )
+            }
+
+            // ── 捐赠 ──────────────────────────────────────
+            composable(Screen.Donate.route) {
+                DonateScreen(onBack = { navController.popBackStack() })
             }
 
             // ── 章节练习：选择科目和章节 ──────────────────────

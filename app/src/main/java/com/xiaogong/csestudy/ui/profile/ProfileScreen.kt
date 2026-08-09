@@ -31,7 +31,11 @@ import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(vm: ProfileViewModel, onLevelSelected: (ExamLevel) -> Unit) {
+fun ProfileScreen(
+    vm: ProfileViewModel,
+    onLevelSelected: (ExamLevel) -> Unit,
+    onDonateClick: () -> Unit
+) {
     val state by vm.uiState.collectAsStateWithLifecycle()
     var showLevelDialog by remember { mutableStateOf(false) }
     var showEditDialog by remember { mutableStateOf(false) }
@@ -176,6 +180,13 @@ fun ProfileScreen(vm: ProfileViewModel, onLevelSelected: (ExamLevel) -> Unit) {
                                 onCheckedChange = { vm.setReminderEnabled(it) }
                             )
                         }
+                        HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                        ProfileMenuItem(
+                            icon = Icons.Default.VolunteerActivism,
+                            title = "捐赠支持",
+                            subtitle = "请我喝杯咖啡，支持继续更新",
+                            onClick = onDonateClick
+                        )
                         HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                         ProfileMenuItem(
                             icon = Icons.Default.Info,
