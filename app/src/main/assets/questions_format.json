@@ -1,0 +1,46 @@
+[
+  {
+    "id": 10001,
+    "level": "中级",
+    "subject": "安全生产法律法规",
+    "chapter": "第一章 安全生产法律基础知识",
+    "knowledgePoint": "安全生产法概述",
+    "type": "SINGLE_CHOICE",
+    "question": "题目内容",
+    "options": ["A. 选项一", "B. 选项二", "C. 选项三", "D. 选项四"],
+    "answer": "A",
+    "analysis": "解析内容",
+    "difficulty": 2,
+    "source": "2023年真题",
+    "year": 2023,
+    "tags": ["标签1", "标签2"]
+  },
+  {
+    "id": 10002,
+    "level": "中级",
+    "subject": "安全生产管理",
+    "chapter": "第一章 安全生产管理基本理论",
+    "knowledgePoint": "危险源辨识",
+    "type": "MULTIPLE_CHOICE",
+    "question": "多选题题目内容",
+    "options": ["A. 选项一", "B. 选项二", "C. 选项三", "D. 选项四"],
+    "answer": "ABC",
+    "analysis": "解析内容",
+    "difficulty": 3,
+    "year": 2023
+  },
+  {
+    "id": 10003,
+    "level": "初级",
+    "subject": "安全生产法律法规",
+    "chapter": "第一章 安全生产法律基础知识",
+    "knowledgePoint": "安全生产法概述",
+    "type": "TRUE_FALSE",
+    "question": "判断题题目内容",
+    "options": ["正确", "错误"],
+    "answer": "正确",
+    "analysis": "解析内容",
+    "difficulty": 1,
+    "year": 2022
+  }
+]

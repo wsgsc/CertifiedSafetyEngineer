@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Shield shadow -->
+    <path
+        android:pathData="M56,24 L83,35 L83,66 C83,80 56,92 56,92 C56,92 29,80 29,66 L29,35 Z"
+        android:fillColor="#000000"
+        android:fillAlpha="0.18" />
+
+    <!-- Shield body -->
+    <path android:pathData="M54,20 L80,31 L80,63 C80,77 54,88 54,88 C54,88 28,77 28,63 L28,31 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="28"
+                android:startY="20"
+                android:endX="80"
+                android:endY="88">
+                <item android:offset="0.0" android:color="#FFFFFF" />
+                <item android:offset="1.0" android:color="#BBDEFB" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Shield inner border -->
+    <path
+        android:pathData="M54,26 L75,35 L75,61 C75,73 54,82 54,82 C54,82 33,73 33,61 L33,35 Z"
+        android:fillColor="#00000000"
+        android:strokeColor="#1565C0"
+        android:strokeWidth="1.5"
+        android:strokeAlpha="0.3" />
+
+    <!-- Gold checkmark -->
+    <path
+        android:pathData="M39,56 L50,68 L71,43"
+        android:fillColor="#00000000"
+        android:strokeColor="#FFC107"
+        android:strokeWidth="7"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+
+    <!-- Checkmark highlight -->
+    <path
+        android:pathData="M39,56 L50,68 L71,43"
+        android:fillColor="#00000000"
+        android:strokeColor="#FFE082"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

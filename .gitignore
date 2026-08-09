@@ -1,0 +1,57 @@
+# ── Gradle / 构建产物 ────────────────────────────
+.gradle/
+build/
+captures/
+.cxx/
+.externalNativeBuild/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+local.properties
+
+# Kotlin 增量编译缓存
+.kotlin/
+
+# ── 签名与密钥（务必不要提交）───────────────────
+*.jks
+*.keystore
+keystore.properties
+signing.properties
+
+# ── Android Studio / IntelliJ ───────────────────
+*.iml
+.idea/*
+# 下面几项对协作有用，放行
+!.idea/codeStyles/
+!.idea/inspectionProfiles/
+!.idea/runConfigurations.xml
+!.idea/.gitignore
+
+# ── Claude Code ─────────────────────────────────
+# settings.json 是项目共享配置，保留；local 版是本机授权记录
+.claude/settings.local.json
+
+# ── 系统与编辑器 ─────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+
+# ── 日志与临时 ───────────────────────────────────
+*.log
+*.hprof
+.navigation/
+
+# ── 制题库的中间素材（本地留存，不进仓库）────────
+/1.jpg
+/2_extracted.txt
+/sample_verify.json
+/tk1.doc
+/tk2.doc
+/tk3.docx
+
+# 说明：app/src/main/assets/pdf/ 下的学习资料 PDF 需要提交，
+# 它们是 app 内置内容，不在忽略范围内。
