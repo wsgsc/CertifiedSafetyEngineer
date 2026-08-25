@@ -13,8 +13,7 @@ class UserProgressRepository(
     private val userAnswerDao: UserAnswerDao,
     private val wrongQuestionDao: WrongQuestionDao,
     private val favoriteQuestionDao: FavoriteQuestionDao,
-    private val studyRecordDao: StudyRecordDao,
-    private val knowledgeProgressDao: KnowledgeProgressDao
+    private val studyRecordDao: StudyRecordDao
 ) {
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
@@ -24,9 +23,6 @@ class UserProgressRepository(
         questionId: Long,
         userAnswer: String,
         isCorrect: Boolean,
-        subject: String,
-        chapter: String,
-        knowledgePoint: String,
         quizMode: String = ""
     ) {
         userAnswerDao.insert(UserAnswerEntity(
@@ -41,7 +37,6 @@ class UserProgressRepository(
         }
 
         updateTodayRecord(isCorrect)
-        updateKnowledgeProgress(subject, chapter, knowledgePoint, isCorrect)
     }
 
     private suspend fun updateTodayRecord(isCorrect: Boolean) {
@@ -56,27 +51,6 @@ class UserProgressRepository(
             correctCount = if (isCorrect) 1 else 0
         )
         studyRecordDao.upsert(updated)
-    }
-
-    private suspend fun updateKnowledgeProgress(
-        subject: String, chapter: String, knowledgePoint: String, isCorrect: Boolean
-    ) {
-        val id = "${subject}_${chapter}_${knowledgePoint}"
-        val existing = knowledgeProgressDao.getById(id)
-        val updated = existing?.copy(
-            answerCount = existing.answerCount + 1,
-            correctCount = existing.correctCount + (if (isCorrect) 1 else 0),
-            lastPracticeAt = System.currentTimeMillis()
-        ) ?: KnowledgeProgressEntity(
-            knowledgeId = id,
-            subject = subject,
-            chapter = chapter,
-            knowledgePoint = knowledgePoint,
-            answerCount = 1,
-            correctCount = if (isCorrect) 1 else 0,
-            lastPracticeAt = System.currentTimeMillis()
-        )
-        knowledgeProgressDao.upsert(updated)
     }
 
     // ── 错题 ────────────────────────────────────────────────────
@@ -135,9 +109,6 @@ class UserProgressRepository(
 
     fun getTodayCorrect(level: ExamLevel): Flow<Int> =
         userAnswerDao.getTodayCorrectCountInSubjects(subjectNames(level), getTodayStartMillis())
-
-    fun getWeakKnowledgePoints(limit: Int = 5): Flow<List<KnowledgeProgressEntity>> =
-        knowledgeProgressDao.getWeakPoints(limit)
 
     suspend fun getStreakDays(): Int {
         val dates = studyRecordDao.getAllStudyDates()

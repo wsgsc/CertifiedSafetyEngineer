@@ -21,9 +21,6 @@ interface QuestionDao {
     @Query("SELECT * FROM questions WHERE subject = :subject AND chapter = :chapter ORDER BY id")
     fun getByChapter(subject: String, chapter: String): Flow<List<QuestionEntity>>
 
-    @Query("SELECT * FROM questions WHERE knowledgePoint = :kp ORDER BY id")
-    fun getByKnowledgePoint(kp: String): Flow<List<QuestionEntity>>
-
     @Query("SELECT * FROM questions WHERE level = :level ORDER BY id")
     fun getByLevel(level: String): Flow<List<QuestionEntity>>
 
@@ -41,9 +38,6 @@ interface QuestionDao {
 
     @Query("SELECT DISTINCT chapter FROM questions WHERE subject = :subject ORDER BY chapter")
     fun getChaptersBySubject(subject: String): Flow<List<String>>
-
-    @Query("SELECT DISTINCT knowledgePoint FROM questions WHERE subject = :subject AND chapter = :chapter ORDER BY knowledgePoint")
-    fun getKnowledgePoints(subject: String, chapter: String): Flow<List<String>>
 
     @Query("SELECT COUNT(*) FROM questions WHERE subject = :subject")
     fun getCountBySubject(subject: String): Flow<Int>

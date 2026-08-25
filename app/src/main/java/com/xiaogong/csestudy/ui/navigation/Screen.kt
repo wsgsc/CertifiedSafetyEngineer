@@ -40,7 +40,6 @@ enum class QuizMode {
     SEQUENTIAL,    // 顺序练习
     RANDOM,        // 随机练习
     CHAPTER,       // 章节练习 (param = "subject|chapter")
-    KNOWLEDGE,     // 知识点练习 (param = knowledgePoint)
     WRONG,         // 错题练习
     FAVORITE,      // 收藏练习
     REDO           // 单题重做 (param = questionId)

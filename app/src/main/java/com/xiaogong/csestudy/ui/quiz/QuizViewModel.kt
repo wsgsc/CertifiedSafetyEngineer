@@ -86,9 +86,6 @@ class QuizViewModel(
                         questionRepo.getByChapter(Subject.valueOf(parts[0]), parts[1]).first()
                     } else questionRepo.getRandomForLevel(level, 20)
                 }
-                QuizMode.KNOWLEDGE -> {
-                    questionRepo.getByKnowledgePoint(param).first()
-                }
                 QuizMode.WRONG -> {
                     val ids = progressRepo.getWrongQuestionIds(level)
                     questionRepo.getByIds(ids)
@@ -180,9 +177,6 @@ class QuizViewModel(
                 questionId = q.id,
                 userAnswer = userAnswer,
                 isCorrect = correct,
-                subject = q.subject.name,
-                chapter = q.chapter,
-                knowledgePoint = q.knowledgePoint,
                 quizMode = mode.name
             )
             if (mode == QuizMode.SEQUENTIAL) {

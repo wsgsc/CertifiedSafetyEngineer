@@ -273,16 +273,6 @@ private fun AnswerResult(state: QuizUiState, question: Question) {
 
         // 答案解析
         AnalysisCard(title = "答案解析", content = question.analysis)
-
-        // 知识点标签
-        Card(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.padding(12.dp)) {
-                Text("知识点", style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.primary)
-                Spacer(Modifier.height(4.dp))
-                Text(question.knowledgePoint, style = MaterialTheme.typography.bodyMedium)
-            }
-        }
     }
 }
 

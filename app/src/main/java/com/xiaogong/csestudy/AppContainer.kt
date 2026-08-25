@@ -23,7 +23,6 @@ class AppContainer(context: Context) {
         userAnswerDao = database.userAnswerDao(),
         wrongQuestionDao = database.wrongQuestionDao(),
         favoriteQuestionDao = database.favoriteQuestionDao(),
-        studyRecordDao = database.studyRecordDao(),
-        knowledgeProgressDao = database.knowledgeProgressDao()
+        studyRecordDao = database.studyRecordDao()
     )
 }

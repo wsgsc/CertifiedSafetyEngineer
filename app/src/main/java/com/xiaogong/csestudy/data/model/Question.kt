@@ -5,7 +5,6 @@ data class Question(
     val level: ExamLevel,
     val subject: Subject,
     val chapter: String,
-    val knowledgePoint: String,
     val type: QuestionType,
     val question: String,
     val options: List<String>,   // 判断题用 ["正确", "错误"]，案例分析题为空

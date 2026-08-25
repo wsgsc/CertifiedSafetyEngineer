@@ -9,7 +9,6 @@ data class QuestionEntity(
     val level: String,          // ExamLevel.name
     val subject: String,        // Subject.name
     val chapter: String,
-    val knowledgePoint: String,
     val type: String,           // QuestionType.name
     val question: String,
     val options: List<String>,  // TypeConverter → JSON

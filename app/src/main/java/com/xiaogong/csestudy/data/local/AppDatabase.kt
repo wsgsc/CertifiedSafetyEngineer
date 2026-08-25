@@ -17,10 +17,9 @@ import com.xiaogong.csestudy.data.local.entity.*
         UserAnswerEntity::class,
         WrongQuestionEntity::class,
         FavoriteQuestionEntity::class,
-        StudyRecordEntity::class,
-        KnowledgeProgressEntity::class
+        StudyRecordEntity::class
     ],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -30,7 +29,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun wrongQuestionDao(): WrongQuestionDao
     abstract fun favoriteQuestionDao(): FavoriteQuestionDao
     abstract fun studyRecordDao(): StudyRecordDao
-    abstract fun knowledgeProgressDao(): KnowledgeProgressDao
 
     companion object {
         @Volatile private var INSTANCE: AppDatabase? = null
@@ -73,13 +71,37 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        // 移除 questions 表的 knowledgePoint 列，并丢弃围绕知识点建立的 knowledge_progress 表。
+        // 题库是纯种子数据，清空后由 CseApplication 从 assets 重新导入。
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("DROP TABLE IF EXISTS knowledge_progress")
+                db.execSQL("DROP TABLE IF EXISTS questions")
+                db.execSQL(
+                    """
+                    CREATE TABLE questions (
+                        id INTEGER NOT NULL PRIMARY KEY,
+                        level TEXT NOT NULL,
+                        subject TEXT NOT NULL,
+                        chapter TEXT NOT NULL,
+                        type TEXT NOT NULL,
+                        question TEXT NOT NULL,
+                        options TEXT NOT NULL,
+                        answer TEXT NOT NULL,
+                        analysis TEXT NOT NULL
+                    )
+                    """.trimIndent()
+                )
+            }
+        }
+
         fun getInstance(context: Context): AppDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: Room.databaseBuilder(
                     context.applicationContext,
                     AppDatabase::class.java,
                     "cse_study.db"
-                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build().also { INSTANCE = it }
             }
     }

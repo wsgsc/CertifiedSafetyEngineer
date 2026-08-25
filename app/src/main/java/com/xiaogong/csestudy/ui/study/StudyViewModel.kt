@@ -23,10 +23,6 @@ class StudyViewModel(
     private val _chapters = MutableStateFlow<List<String>>(emptyList())
     val chapters: StateFlow<List<String>> = _chapters.asStateFlow()
 
-    // 当前章节的知识点列表
-    private val _knowledgePoints = MutableStateFlow<List<String>>(emptyList())
-    val knowledgePoints: StateFlow<List<String>> = _knowledgePoints.asStateFlow()
-
     init {
         loadSubjectCounts()
     }
@@ -48,12 +44,6 @@ class StudyViewModel(
         }
     }
 
-    fun loadKnowledgePoints(subjectName: String, chapterName: String) {
-        val subject = Subject.valueOf(subjectName)
-        viewModelScope.launch {
-            _knowledgePoints.value = questionRepo.getKnowledgePoints(subject, chapterName).first()
-        }
-    }
 }
 
 class StudyViewModelFactory(private val application: CseApplication) : ViewModelProvider.Factory {

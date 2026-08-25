@@ -14,14 +14,8 @@ class QuestionRepository(private val dao: QuestionDao) {
     fun getByChapter(subject: Subject, chapter: String): Flow<List<Question>> =
         dao.getByChapter(subject.name, chapter).map { list -> list.map { it.toDomain() } }
 
-    fun getByKnowledgePoint(knowledgePoint: String): Flow<List<Question>> =
-        dao.getByKnowledgePoint(knowledgePoint).map { list -> list.map { it.toDomain() } }
-
     fun getChaptersBySubject(subject: Subject): Flow<List<String>> =
         dao.getChaptersBySubject(subject.name)
-
-    fun getKnowledgePoints(subject: Subject, chapter: String): Flow<List<String>> =
-        dao.getKnowledgePoints(subject.name, chapter)
 
     fun getCountBySubject(subject: Subject): Flow<Int> =
         dao.getCountBySubject(subject.name)
@@ -67,7 +61,6 @@ private fun QuestionEntity.toDomain() = Question(
     level = ExamLevel.valueOf(level),
     subject = Subject.valueOf(subject),
     chapter = chapter,
-    knowledgePoint = knowledgePoint,
     type = QuestionType.valueOf(type),
     question = question,
     options = options,
@@ -80,7 +73,6 @@ private fun Question.toEntity() = QuestionEntity(
     level = level.name,
     subject = subject.name,
     chapter = chapter,
-    knowledgePoint = knowledgePoint,
     type = type.name,
     question = question,
     options = options,
