@@ -97,11 +97,6 @@ gradlew.bat assembleDebug
 
 题库数据通过 JSON 文件加载到应用中。
 
-## 版本信息
-
-- **当前版本**: 1.0
-- **最低支持**: Android 8.0 (API 26)
-- **目标版本**: Android 15 (API 35)
 
 ## 开发计划
 
@@ -111,9 +106,6 @@ gradlew.bat assembleDebug
 - [ ] 支持数据云同步
 - [ ] 优化 PDF 阅读体验
 
-## 许可证
-
-[待添加许可证信息]
 
 ## 联系方式
 
